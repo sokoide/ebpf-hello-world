@@ -2,7 +2,9 @@
 
 ## About
 
-* Hello world examples from <https://www.youtube.com/watch?v=lrSExTfS-iQ>
+* eBPF Hello world examples from the followings
+  * [Beginners guide to eBPF](https://www.youtube.com/watch?v=lrSExTfS-iQ)
+  * [eBPF load balancer](https://www.youtube.com/watch?v=ZNtVedFsD-k&t=0s)
 
 ## Env
 
@@ -43,6 +45,7 @@ b'         kubelet-1076665 [005] .... 503796.850939: 0: Hello id: 0'
 ```
 
 * hello2 ... improved version
+
 ```sh
 sudo python3 ebpf_hello2.py
 
@@ -53,6 +56,33 @@ ID 1000: 1
 ID 0: 19        ID 1000: 1
 ```
 
+* eBPF TCP tracer
+
+```sh
+sudo apt install linux-tools-common linux-tools-generic libpcap-dev gcc-multilib
+sudo ln -s /usr/include/asm-generic/ /usr/include/asm
+
+git submodule update --init --recursive
+scott@lab2:~/repo/ebpf/hello/tcptrace$
+
+make xdp_kernel.o
+sudo make
+
+# try curl to the host from another host
+curl $HOSTNAME
+curl: (7) Failed to connect to lab2 port 80: Connection refused
+
+# check trace
+scott@lab2:~$ sudo cat /sys/kernel/debug/tracing/trace| tail
+          <idle>-0       [000] ..s. 509531.991320: 0: Got something
+          <idle>-0       [000] ..s. 509531.991322: 0: TCP packet from c902a8c0 to ca02a8c0
+          <idle>-0       [005] ..s. 509531.991908: 0: Got something
+          <idle>-0       [005] ..s. 509531.991909: 0: TCP packet from c902a8c0 to ca02a8c0
+          <idle>-0       [005] ..s. 509531.991910: 0: Got something
+
+# stop and unload it
+sudo make clean
+```
 
 ## Links
 
@@ -63,8 +93,8 @@ ID 0: 19        ID 1000: 1
 	* [Getting Started with BPF Observability](https://www.youtube.com/watch?v=Kp3PHPuFkaA&t=1886s)
     * [Using eBPF as an SRE](https://www.youtube.com/watch?v=Kp3PHPuFkaA&t=4974s)
   * [eBPF summit 2021 Day 2](https://www.youtube.com/watch?v=ZNtVedFsD-k&t=0s)
+    * [eBPF load balancer](https://www.youtube.com/watch?v=ZNtVedFsD-k&t=0s)
 * eBPF usage examples (Japanese)
   * [eBPFのコンパイラーに対応したツールでさまざまな挙動を可視化する](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0688)
   * [BCCでeBPFのコードを書いてみる](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0690)
   * [sysfsやbpftoolを用いたeBPFの活用](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0692)
-

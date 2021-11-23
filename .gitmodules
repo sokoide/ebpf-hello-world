@@ -1,0 +1,3 @@
+[submodule "tcptrace/libbpf"]
+	path = tcptrace/libbpf
+	url = https://github.com/libbpf/libbpf
