@@ -24,6 +24,8 @@ sudo execsnoop-bpfcc -Tx
 
 ## How to run
 
+### Hello1
+
 * hello ... this is not good because it calls `bpf_trace_printk` which serializes in kernel
 
 ```sh
@@ -44,6 +46,8 @@ b'         kubelet-1076665 [005] .... 503796.850939: 0: Hello id: 0'
 ...
 ```
 
+### Hello2
+
 * hello2 ... improved version
 
 ```sh
@@ -55,6 +59,8 @@ $ sudo python3 epbf_hello2.py
 ID 1000: 1
 ID 0: 19        ID 1000: 1
 ```
+
+### TCP tracer
 
 * eBPF TCP tracer
 
@@ -73,7 +79,7 @@ curl $HOSTNAME
 curl: (7) Failed to connect to lab2 port 80: Connection refused
 
 # check trace
-scott@lab2:~$ sudo cat /sys/kernel/debug/tracing/trace| tail
+$ sudo cat /sys/kernel/debug/tracing/trace| tail
           <idle>-0       [000] ..s. 509531.991320: 0: Got something
           <idle>-0       [000] ..s. 509531.991322: 0: TCP packet from c902a8c0 to ca02a8c0
           <idle>-0       [005] ..s. 509531.991908: 0: Got something
