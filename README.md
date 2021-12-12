@@ -48,7 +48,8 @@ b'         kubelet-1076665 [005] .... 503796.850939: 0: Hello id: 0'
 
 ### Hello2
 
-* hello2 ... improved version
+* hello2 ... improved version by using `BPF_HASH`
+* Kernel keeps info (uid, counter) in a hash so that an user mode client can read it anytime
 
 ```sh
 sudo python3 ebpf_hello2.py
@@ -58,6 +59,18 @@ sudo python3 ebpf_hello2.py
 $ sudo python3 epbf_hello2.py
 ID 1000: 1
 ID 0: 19        ID 1000: 1
+```
+
+### Hello3
+
+* hello3 ... improved version by using `events.perf_submit`
+* Kernel submits info (uid, counter) to a ring buffer (events) so that an user mode client can read it
+
+```sh
+$ sudo python3 ./ebpf_hello3.py
+[2021-12-12 10:55:56.561067] pid:29436, uid: 1000, comm: b'node'
+[2021-12-12 10:55:56.572300] pid:47200, uid: 1000, comm: b'sh'
+[2021-12-12 10:55:56.572404] pid:47200, uid: 1000, comm: b'sh'
 ```
 
 ### TCP tracer
