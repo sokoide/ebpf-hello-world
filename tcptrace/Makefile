@@ -7,7 +7,7 @@ CFLAGS=-target bpf \
 	    -Wno-pointer-sign \
 	    -Wno-compare-distinct-pointer-types \
 	    -Werror \
-	    -Ilibbpf/src\
+	    -I../submodules/libbpf/src\
 	    -O2 -emit-llvm
 
 default: run
