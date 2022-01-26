@@ -26,7 +26,7 @@ sudo execsnoop-bpfcc -Tx
 
 ### Hello1
 
-* hello ... this is not good because it calls `bpf_trace_printk` which serializes in kernel
+* hello ... kprobe. this is not good because it calls `bpf_trace_printk` which serializes in kernel
 
 ```sh
 sudo python3 ebpf_hello.py
@@ -48,7 +48,7 @@ b'         kubelet-1076665 [005] .... 503796.850939: 0: Hello id: 0'
 
 ### Hello2
 
-* hello2 ... improved version by using `BPF_HASH`
+* hello2 ... kprobe. improved version by using `BPF_HASH`
 * Kernel keeps info (uid, counter) in a hash so that an user mode client can read it anytime
 
 ```sh
@@ -63,7 +63,7 @@ ID 0: 19        ID 1000: 1
 
 ### Hello3
 
-* hello3 ... improved version by using `events.perf_submit`
+* hello3 ... kprobe. improved version by using `events.perf_submit`
 * Kernel submits info (uid, counter) to a ring buffer (events) so that an user mode client can read it
 
 ```sh
@@ -71,6 +71,18 @@ $ sudo python3 ./ebpf_hello3.py
 [2021-12-12 10:55:56.561067] pid:29436, uid: 1000, comm: b'node'
 [2021-12-12 10:55:56.572300] pid:47200, uid: 1000, comm: b'sh'
 [2021-12-12 10:55:56.572404] pid:47200, uid: 1000, comm: b'sh'
+```
+
+### Hello4
+
+* hello4 ... system call tracepoints to capture syscall arguments.
+* <https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md>
+
+```sh
+sudo python3 ./ebpf_hello4.py
+[2022-01-26 10:05:15.729691] pid:1441800, uid: 1000, syscall: openat, comm: b'go', file: b'/tmp/go-build1646927981/b001/exe/foo'
+[2022-01-26 10:05:15.733258] pid:1441872, uid: 1000, syscall: openat, comm: b'foo', file: b''
+[2022-01-26 10:05:15.734138] pid:1441803, uid: 1000, syscall: openat, comm: b'go', file: b'/home/scott/.cache/go-build/trim.txt'
 ```
 
 ### TCP tracer
