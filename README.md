@@ -76,6 +76,7 @@ $ sudo python3 ./ebpf_hello3.py
 ### Hello4
 
 * hello4 ... system call tracepoints to capture syscall arguments.
+* hello4b ... replaced bpf_probe_read_user with bpf_probe_read for old OS
 * <https://github.com/iovisor/bcc/blob/master/docs/reference_guide.md>
 
 ```sh
