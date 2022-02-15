@@ -1,6 +1,6 @@
-from bcc import BPF
 import datetime
 import ctypes as ct
+from bcc import BPF
 
 # kernel space code
 program = """
@@ -42,7 +42,7 @@ static int submit(void *ctx, int ty, const char* file) {
     data.file[0] = 0;
   } else {
     __builtin_memset(data.file, 0, sizeof(data.file));
-    bpf_probe_read_user(data.file, sizeof(data.file), (void *)file);
+    bpf_probe_read_kernel(data.file, sizeof(data.file), (void *)file);
   }
 
   events.perf_submit(ctx, &data, sizeof(data));
@@ -59,21 +59,21 @@ int syscall__nanosleep(struct pt_regs *ctx, const struct timespec *req, struct t
 }
 
 // if you want to get args, it must be in the format of syscall__$syscallname
-int syscall__execve(struct pt_regs *ctx, const char __user *filename)
+int syscall__execve(struct pt_regs *ctx, const char *filename)
 {
   return submit(ctx, tyExecve, filename);
 }
 
 
-int syscall__openat(struct pt_regs *ctx, int dirfd, const char __user *pathname, int flags) {
+int syscall__openat(struct pt_regs *ctx, int dirfd, const char *pathname, int flags) {
   return submit(ctx, tyOpenat, pathname);
 }
 
-int syscall__open(struct pt_regs *ctx, const char __user *pathname, int flags) {
+int syscall__open(struct pt_regs *ctx, const char *pathname, int flags) {
   return submit(ctx, tyOpen, pathname);
 }
 
-int syscall__creat(struct pt_regs *ctx, const char __user *pathname, int flags) {
+int syscall__creat(struct pt_regs *ctx, const char *pathname, int flags) {
   return submit(ctx, tyCreat, pathname);
 }
 """
@@ -128,6 +128,14 @@ def print_event(cpu, data, size):
                 event.comm))
 
 
-b["events"].open_perf_buffer(print_event)
+def handle_lost_cb(msgs):
+    print('%d msgs lost' % msgs, file=sys.stderr)
+
+
+# page_cnt must be power of 2. default: 8
+# b["events"].open_perf_buffer(print_event, page_cnt=64, lost_cb=None)
+# b["events"].open_perf_buffer(print_event, page_cnt=4, lost_cb=handle_lost_cb)
+b["events"].open_perf_buffer(print_event, page_cnt=4, lost_cb=None)
+
 while True:
     b.perf_buffer_poll()
